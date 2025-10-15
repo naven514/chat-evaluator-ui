@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MessageBubble } from "@/components/MessageBubble";
 import { ChatInput } from "@/components/ChatInput";
 import { AnalysisResponse } from "@/components/AnalysisResponse";
+import { AudioNote } from "@/components/AudioNote";
 import { MessageCircle } from "lucide-react";
 
 interface Message {
   id: number;
-  type: 'user' | 'analysis';
+  type: 'user' | 'bot' | 'audio' | 'analysis';
   content: string | any;
 }
 
@@ -43,21 +44,48 @@ const mockAnalysisData = {
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const handleSendMessage = (message: string) => {
-    setMessages([...messages, {
-      id: Date.now(),
-      type: 'user',
-      content: 'dummy message'
-    }]);
+    const newMessages = [
+      ...messages,
+      {
+        id: Date.now(),
+        type: 'user' as const,
+        content: message
+      },
+      {
+        id: Date.now() + 1,
+        type: 'bot' as const,
+        content: 'dummy message'
+      }
+    ];
+    setMessages(newMessages);
   };
 
   const handleMicPress = () => {
-    setMessages([...messages, {
-      id: Date.now(),
-      type: 'analysis',
-      content: mockAnalysisData
-    }]);
+    const newMessages = [
+      ...messages,
+      {
+        id: Date.now(),
+        type: 'audio' as const,
+        content: 3
+      },
+      {
+        id: Date.now() + 1,
+        type: 'analysis' as const,
+        content: mockAnalysisData
+      }
+    ];
+    setMessages(newMessages);
   };
 
   return (
@@ -93,19 +121,30 @@ const Index = () => {
               </p>
             </div>
           ) : (
-            messages.map((message) => (
-              <div key={message.id}>
-                {message.type === 'user' ? (
-                  <MessageBubble isUser>
-                    <p className="text-sm">{message.content}</p>
-                  </MessageBubble>
-                ) : (
-                  <MessageBubble>
-                    <AnalysisResponse data={message.content} />
-                  </MessageBubble>
-                )}
-              </div>
-            ))
+            <>
+              {messages.map((message) => (
+                <div key={message.id}>
+                  {message.type === 'user' ? (
+                    <MessageBubble isUser>
+                      <p className="text-sm">{message.content}</p>
+                    </MessageBubble>
+                  ) : message.type === 'bot' ? (
+                    <MessageBubble>
+                      <p className="text-sm">{message.content}</p>
+                    </MessageBubble>
+                  ) : message.type === 'audio' ? (
+                    <MessageBubble isUser>
+                      <AudioNote duration={message.content} />
+                    </MessageBubble>
+                  ) : (
+                    <MessageBubble>
+                      <AnalysisResponse data={message.content} />
+                    </MessageBubble>
+                  )}
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </>
           )}
         </div>
       </main>
