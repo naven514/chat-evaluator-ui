@@ -4,8 +4,9 @@ import { ResponseBanner } from "./ResponseBanner";
 import { Badge } from "@/components/ui/badge";
 
 interface DetailedTip {
-  category: string;
-  tip: string;
+  original_timestamp: string;
+  transcribed_timestamp: string;
+  suggestion: string;
 }
 
 interface AnalysisData {
@@ -60,49 +61,48 @@ export const AnalysisResponse = ({ data }: AnalysisResponseProps) => {
         />
       </div>
 
-      {/* Repetitive Words and Detailed Tips */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: '400ms' }}>
-        {/* Repetitive Words */}
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Repeat className="h-4 w-4 text-warning" />
-            Repetitive Words
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {data.repetitive_words_list.length > 0 ? (
-              data.repetitive_words_list.map((word, index) => (
-                <Badge
-                  key={index}
-                  variant="secondary"
-                  className="bg-warning/10 text-warning border-warning/20 hover:bg-warning/20"
-                >
-                  {word}
-                </Badge>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">No repetitive words detected</p>
-            )}
-          </div>
+      {/* Repetitive Words */}
+      <div className="bg-card border border-border rounded-2xl p-5 shadow-sm animate-fade-in" style={{ animationDelay: '400ms' }}>
+        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Repeat className="h-4 w-4 text-warning" />
+          Repetitive Words
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {data.repetitive_words_list.length > 0 ? (
+            data.repetitive_words_list.map((word, index) => (
+              <Badge
+                key={index}
+                variant="secondary"
+                className="bg-warning/10 text-warning border-warning/20 hover:bg-warning/20"
+              >
+                {word}
+              </Badge>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">No repetitive words detected</p>
+          )}
         </div>
+      </div>
 
-        {/* Detailed Tips */}
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Lightbulb className="h-4 w-4 text-accent" />
-            Detailed Tips
-          </h3>
-          <div className="space-y-3 max-h-48 overflow-y-auto">
-            {data.detailed_tips.length > 0 ? (
-              data.detailed_tips.map((tip, index) => (
-                <div key={index} className="space-y-1">
-                  <p className="text-xs font-medium text-accent">{tip.category}</p>
-                  <p className="text-sm text-foreground">{tip.tip}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">Great job! Keep up the good work.</p>
-            )}
-          </div>
+      {/* Detailed Tips */}
+      <div className="bg-card border border-border rounded-2xl p-5 shadow-sm animate-fade-in" style={{ animationDelay: '500ms' }}>
+        <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+          <Lightbulb className="h-4 w-4 text-accent" />
+          Detailed Tips
+        </h3>
+        <div className="space-y-3 max-h-48 overflow-y-auto">
+          {data.detailed_tips.length > 0 ? (
+            data.detailed_tips.map((tip, index) => (
+              <div key={index} className="space-y-1">
+                <p className="text-xs font-medium text-accent">
+                  Original: {tip.original_timestamp} • Heard: {tip.transcribed_timestamp}
+                </p>
+                <p className="text-sm text-foreground">{tip.suggestion}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">Great job! Keep up the good work.</p>
+          )}
         </div>
       </div>
 
