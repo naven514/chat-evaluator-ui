@@ -1,0 +1,9 @@
+services:
+  - type: static
+    name: chat-evaluator-ui
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: https://backend-0d8r.onrender.com
+
